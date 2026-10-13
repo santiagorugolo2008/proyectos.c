@@ -1,5 +1,4 @@
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #define EXITO 0
@@ -43,6 +42,7 @@ Medicion* reservarMemoria(int cantidad)
 int CargarMedicion(Medicion* p)
 {
     int valR = ERROR;
+    printf("ingrese id, valor, estado, timestamp\n");
     if(scanf(" %d %f %d %d", &p->id, &p->valor, &p->estado, &p->timestamp) == 4)
     {
         valR = EXITO;
@@ -101,6 +101,7 @@ int promedio(Medicion* array, int cantidad, int estado, float *p)
     float suma = 0;
     int i;
     int contador = 0;
+    printf("calculando promedio\n");
     if(cantidad > 0 && array != NULL && p != NULL)
     {
         for(i=0; i<cantidad; i++)
@@ -180,6 +181,9 @@ int main(int argc, char *argv[])
     int valR = ERROR;
     float prom;
     int estado;
+    int id;
+    int i=0;
+    Medicion *encontrada = NULL;
     Medicion *p = NULL;
     if(argc != 2 && argc != 3)
     {
@@ -202,6 +206,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
+                    printf("cargar los valores\n");
                     valR = CargarPorTeclado(p, cantidad);
                     if (valR==EXITO)
                     {
@@ -209,16 +214,44 @@ int main(int argc, char *argv[])
                          if( argc == 3)
                         {
                             estado = atoi(argv[2]);
-                            if (promedio(p, cantidad, estado, &prom) == EXITO);
+                            if (promedio(p, cantidad, estado, &prom) == EXITO)
                             {
-                                printf("promedio = %.2f\n estado = %d",prom, estado );
+                                printf("promedio = %.2f\n estado = %d\n",prom, estado );
+                            }
+                           
+                        }
+                        printf("Ingrese un id para buscar una medicion\n");
+                         if (scanf(" %d", &id) == 1)
+                      {
+                         if(id < 0)
+                            {
+                                printf("id invalido\n");
+                            }
+                            else
+                            {
+                                encontrada = buscarMedicion(p, cantidad, id);
+                                if(encontrada == NULL)
+                                {
+                                    printf("NO SE PUDO ENCONTRAR\n");
+                                }
+                                else
+                                {
+                                    imprimirCampos(encontrada);
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        printf("no se cargo de manera exitosa\n");
-                    }
+                            printf("ordenar por valor de menor a mayor\n");
+                            ordenarArray(p, cantidad);
+                            for (i=0; i<cantidad;i++)
+                            {
+                                imprimirCampos(p + i);
+                            }
+                        }
+                        else
+                        {
+                             printf("no se cargo de manera exitosa\n");
+                        }
+                
                     
                 }
             
