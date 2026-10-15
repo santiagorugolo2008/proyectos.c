@@ -1,5 +1,6 @@
 #ifndef SENSOR_H
 #define SENSOR_H
+
  
 /**
  * \file    sensor.h
@@ -74,6 +75,17 @@ typedef struct
 /* Prototipos */
 sensor_t  * ajustar     (sensorF_t *origen);
 sensorF_t * ajustarBack (sensor_t  *origen);
+int   agregar (sensor_t ***listado, int *pcant);
+void  quitar  (sensor_t ***listado, int *pcant);
+void  listar  (sensor_t **listado, int cant);
+/* Consultas de criterio (una por campo) */
+int IDEq        (sensor_t *dato, void *valor);
+int NombreExtEq (sensor_t *dato, void *valor);
+int MarModEq    (sensor_t *dato, void *valor);
+int TipoEq      (sensor_t *dato, void *valor);
+int UmbralSupEq (sensor_t *dato, void *valor);
+int UmbralInfEq (sensor_t *dato, void *valor);
+int AccionEq    (sensor_t *dato, void *valor);
  
 #endif
  
