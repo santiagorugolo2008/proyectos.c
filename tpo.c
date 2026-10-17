@@ -81,6 +81,81 @@ sensorF_t * ajustarBack(sensor_t* origen)
     return nuevo;
 }
 
+
+int pedirTipo(unsigned char* tipo)
+{
+    int valR = ERROR;
+    int aux;
+
+    printf("tipo (0 a 255): ");
+    if(scanf(" %d", &aux) == 1 && aux>= 0 && aux<=255)
+    {
+        *tipo = (unsigned char)aux;
+        valR = IMPOLUTO;
+    }
+
+    return valR;
+}
+
+int pedirUmbral(umbral_t *u, const char* texto)
+{
+    int valR = ERROR;
+
+    printf("%s (magnitud y unidad): ", texto);
+    if(scanf("%f %9s", &u->magnitud, &u->unidad)==2)
+    {
+        valR = IMPOLUTO;
+    }
+    return valR;
+}
+
+int pedirAccion(accion_t *a)
+{
+    int valR = ERROR;
+    int aux;
+
+    printf("Accion (0 a 5)");
+    printf("0-aperturaR 1-aperturaN 2-aperturaL\n");
+    printf("3-cierreR 4-cierreN 5-cierreL\n");
+    scanf("%d", &aux);
+    if(aux>=0 && aux<=255)
+    {
+        *a=(accion_t)aux;
+        valR = IMPOLUTO;
+    }
+    return IMPOLUTO;
+}
+
+
+int pedirDatos(sensor_t *p)
+{
+    int valR = ERROR;
+
+    printf("Id: ");
+    if(scanf("%d", &p->id)==1)
+    {
+        printf("Nombre(Ubicacion): ");
+        if(scanf(" %22s", p->NombreExt)==1)
+        {
+            printf("Marca-Modelo: ");
+            if(scanf(" %22s", p->MarMod)==1)
+            {
+                
+                if(pedirTipo(&p->Tipo)== IMPOLUTO && pedirAccion(&p->accion)==IMPOLUTO && pedirUmbral(&p->umbralSup, "Umbral Superior")==IMPOLUTO)
+                {
+                    if(pedirUmbral(&p->umbralInf, "Umbral Inferior")==IMPOLUTO)
+                    {
+                        valR=IMPOLUTO;
+                    }
+                    
+                }
+            }
+        }
+    }
+
+    return valR;
+}
+
 int agregar (sensor_t** listado, int* pcant)
 {
     int valR = ERROR;
@@ -91,116 +166,111 @@ int agregar (sensor_t** listado, int* pcant)
         aux = realloc(*listado, sizeof(sensor_t) * (*pcant + 1));
         if (aux != NULL)
         {
-            *listado = aux;
-            printf("id:\n");
-            if(scanf(" %d", &aux->id) == 1);
+            pedirDatos(&aux[*pcant]);
+        }
         
-            printf("Ingrese el nombre\n");
-            if(scanf(" %22s", &aux->NombreExt) == 1)
-            {
-                printf("ingresar marca y modelo\n ");
-            
-                if(scanf(" %22s", &aux->MarMod)==1);
-                {
-                    printf("ingrese el tipo de 0 a 255 \n");
-                
-                    if(scanf(" %c", aux->Tipo)==1 && aux->Tipo >=0 && aux->Tipo <= 255);
-                    {
-                        printf("ingresar accion\n");
-                        if(scanf(" %d", aux->accion) == 1);
-                        {
-                            printf("ingresar umbral superior primero magnitud y luego su unidad\n");
-                            if(scanf(" %.2f, %9s", aux->umbralSup.magnitud, aux->umbralSup.unidad) == 1)
-                            {
-                                printf("ingresar umbral inferior primero magnitud y luego su unidad\n");
-                                {
-                                    if(scanf(" %.2f, %9s", aux->umbralInf.magnitud, aux->umbralInf.unidad) == 1);
-                                    {
-                                        valR= IMPOLUTO;
-                                        *listado = aux;
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-            (*pcant)++;
-        }
-        if(valR == ERROR)
-        {
-            free(aux);
-        }
     }
-    else 
+    return valR;
+}
+
+int IDEq(sensor_t *dato, void *valor)
+{
+    int valR = FALSE;
+
+    if(dato != NULL && valor != NULL)
     {
-        printf("la lista esta vacia\n ");
-        valR = ERROR;
-        
+        if(dato->id == *(int*)valor)
+        {
+            valR = TRUE;
+        }
     }
 
+    return valR;
+}
+
+int NombreExtEq(sensor_t *dato, void* valor)
+{
+    int valR = FALSE;
+    if(dato != NULL && valor != NULL)
+    {
+        if(strcmp(dato->NombreExt, (char*)valor)==0)
+        {
+            valR = TRUE;
+        }
+    }
 
 
     return valR;
 }
 
-void quitar(sensor_t** listado, int* pcant)
-{
-    sensor_t* aux = NULL;
-    int criterio, id, tipo, i =0;
-    int coincide;
-    char  valor[24];
-    if(*listado != NULL && pcant != NULL)
-    {
-        printf("Buscar por ID (1)\n, Buscar por NombreExt(2)\n Buscar MarMod(3)\n Buscar tipo(4)\n");
-        scanf(" %d", &criterio);
-        if(criterio == 1)
-        {
-            scanf(" %d", &id);
-            while(id>0 && i<*pcant)
-            {
-                if(listado[i]->id == id)
-                {
-                    free(*listado);
-                }
-                
-                
-                i++;
-            }
-        }
-        else if(criterio == 2 || criterio == 3)
-        {
-            scanf(" %23s", &valor);
-            while (i<*pcant)
-            {
-                if(listado[i]->NombreExt == valor || listado[i]->MarMod == valor)
-                {
-                    free(*listado);
-                }
-                i++;
-            }
-        }
-        else if(criterio == 4)
-        {
-            scanf(" %d", &tipo);
-            while (i<*pcant)
-            {
-                if(listado[i]->Tipo == tipo)
-                {
-                    free(*listado);
-                }
-            }
-        }
-        else
-        {
-            printf("Error al poner el criterio\n");
-        }
 
+int MarModEq(sensor_t *dato, void* valor)
+{
+    int valR = FALSE;
+    if(dato != NULL && valor != NULL)
+    {
+        if(strcmp(dato->MarMod, (char*)valor)==0)
+        {
+            valR = TRUE;
+        }
     }
-    
+
+
+    return valR;
 }
 
+int TipoEq(sensor_t* dato, void* valor)
+{
+    int valR = FALSE;
+
+    if(dato != NULL && valor != NULL)
+    {
+        if(dato->Tipo == *(unsigned char*)valor)
+        {
+            valR = TRUE;
+        }
+    }
+
+    return valR;
+}
+
+int UmbralSupEq(sensor_t *dato, void* valor)
+{
+    int valR = FALSE;
+    umbral_t* p = (umbral_t*)valor;
+    if(dato != NULL && valor != NULL)
+    {
+        if(dato->umbralSup.magnitud == p->magnitud)
+        {
+            if(strcmp(dato->umbralSup.unidad, p->unidad)==0)
+            {
+                valR = TRUE;
+            }
+        }
+    }
+
+
+    return valR;
+}
+
+int UmbralInfEq(sensor_t *dato, void* valor)
+{
+    int valR = FALSE;
+    umbral_t* p = (umbral_t*)valor;
+    if(dato != NULL && valor != NULL)
+    {
+        if(dato->umbralInf.magnitud == p->magnitud)
+        {
+            if(strcmp(dato->umbralInf.unidad, p->unidad)==0)
+            {
+                valR = TRUE;
+            }
+        }
+    }
+
+
+    return valR;
+}
 
 
 
@@ -240,4 +310,5 @@ int main (int argc, char* argv[])
 
 
     return 0;
+}
 }
