@@ -34,6 +34,7 @@ typedef struct nhora_t {
 
 typedef struct paciente_t {
   unsigned char tipoID;
+  int id;
   int pac;
   char nombre[CARACTERES];
   NFECHA_t nacimiento;
@@ -41,20 +42,9 @@ typedef struct paciente_t {
 } PACIENTE_t;
 
 typedef struct pac_t {
-  int id;
-  char nombre[CARACTERES];
-  char apellido[CARACTERES];
-  int responID;
+  PACIENTE_t paciente;
   struct pac_t *siguiente;
 } NODO_PACIENTE_t;
-
-typedef struct res_t {
-  int id;
-  char nombre[CARACTERES];
-  char apellido[CARACTERES];
-  int responID;
-  struct res_t *siguiente;
-} NODO_RESPONSABLE_t;
 
 typedef struct responsable_t {
   int responID;
@@ -62,6 +52,13 @@ typedef struct responsable_t {
   char nombre[CARACTERES];
   unsigned long int telcont;
 } RESPONSABLE_t;
+
+typedef struct res_t {
+  RESPONSABLE_t responsable;
+  struct res_t *siguiente;
+} NODO_RESPONSABLE_t;
+
+
 
 typedef struct turno_t {
   int responID;
